@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halloween Pumpkin with Moving Eyes</title>
+  <style>
+    body {
+      background: radial-gradient(circle, #ff8c00 30%, #ff4500 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      background-size: 100% 100%;
+    }
+
+    /* Pumpkin surface lines */
+    body {
+      background-image: 
+        repeating-linear-gradient(
+          to right,
+          transparent,
+          transparent 20%,
+          rgba(255, 140, 0, 0.303) 25%,
+          rgba(0, 0, 0, 0.474) 50%,
+          rgba(255, 140, 0, 0) 75%
+        ),
+        radial-gradient(circle, #ff8c00 30%, #ff4500 100%);
+      background-size: 100px 100%, 100% 100%;
+      pointer-events: none; /* Allow clicks to pass through */
+    }
+
+    .face-container {
+      position: absolute;
+      top: 30%; /* Adjust this value to move both eyes and smile */
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .eye-container {
+      display: flex;
+      gap: 40px;
+    }
+
+    .eye {
+      width: 300px;
+      height: 150px;
+      background-color: rgb(0, 0, 0);
+      border-radius: 150px;
+      position: relative;
+      border: 2px solid black;
+    }
+
+    .pupil {
+      width: 60px;
+      height: 60px;
+      background-color: rgb(255, 0, 0);
+      border-radius: 50%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s;
+    }
+
+    .smile {
+      position: absolute;
+      top: 300%; /* Position relative to the eye container */
+      left: 50%;
+      width: 600px;
+      height: 600px;
+      background-color: rgb(0, 0, 0);
+      border: 10px solid white;
+      border-top: none;
+      border-radius: 100px 100px 0 0;
+      transform: translate(-50%, -50%) rotate(180deg);
+      clip-path: polygon(50% 83.52%, 58.98% 92.42%, 63.33% 80.56%, 90% 85%, 78.57% 75%, 87.92% 55%, 63.33% 70%, 50% 50%, 39% 70%, 5% 55%, 17.25% 75%, 10% 85%, 30.56% 80.56%, 38.97% 91.58%);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="face-container">
+    <div class="eye-container">
+      <div class="eye">
+        <div class="pupil"></div>
+      </div>
+      <div class="eye">
+        <div class="pupil"></div>
+      </div>
+    </div>
+    <div class="smile"></div>
+  </div>
+  <script>
+    const eyes = document.querySelectorAll('.eye');
+
+    function movePupils() {
+      const randomX = Math.random() * 50 - 25; // Increased range for x direction
+      const randomY = Math.random() * 20 - 10; // Increased range for y direction
+      eyes.forEach(eye => {
+        const pupil = eye.querySelector('.pupil');
+        pupil.style.transform = `translate(-50%, -50%) translate(${randomX}px, ${randomY}px)`;
+      });
+
+      // Set a random timeout for the next movement
+      const randomDelay = Math.random() * (2000 - 750) + 750; // Random delay between 750ms and 2000ms
+      setTimeout(movePupils, randomDelay);
+    }
+
+    movePupils();
+  </script>
+</body>
+
+</html>
