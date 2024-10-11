@@ -20,23 +20,56 @@
 
     /* Pumpkin surface lines */
     body {
-      background-image: 
-        repeating-linear-gradient(
-          to right,
+      background-image:
+        repeating-linear-gradient(to right,
           transparent,
           transparent 20%,
           rgba(255, 140, 0, 0.303) 25%,
           rgba(0, 0, 0, 0.474) 50%,
-          rgba(255, 140, 0, 0) 75%
-        ),
+          rgba(255, 140, 0, 0) 75%),
         radial-gradient(circle, #ff8c00 30%, #ff4500 100%);
       background-size: 100px 100%, 100% 100%;
-      pointer-events: none; /* Allow clicks to pass through */
+      pointer-events: none;
+      /* Allow clicks to pass through */
+    }
+
+    .scrolling-message {
+      position: fixed;
+      /* Change to fixed to remove it from the document flow */
+      top: 20px;
+      /* Distance from the top */
+      white-space: nowrap;
+      /* Prevent text from wrapping */
+      font-size: 75px;
+      text-shadow: 2px 2px rgba(0, 0, 0, 0.5), 0 1px rgba(0, 0, 0, 0.5), 1px 0 rgba(0, 0, 0, 0.5), 0 -1px rgba(0, 0, 0, 0.5);
+      /* Font size for the message */
+      color: white;
+      /* Text color */
+      font-family: 'Arial', sans-serif;
+      /* Font family */
+      left: 100%;
+      /* Start completely off-screen to the right */
+      z-index: 1000;
+      /* Ensure it appears above all other elements */
+      animation: scroll 20s linear infinite;
+    }
+
+    @keyframes scroll {
+      0% {
+        transform: translateX(-120vw);
+        /* Start at the right edge */
+      }
+
+      100% {
+        transform: translateX(0);
+        /* Move to the left edge */
+      }
     }
 
     .face-container {
       position: absolute;
-      top: 30%; /* Adjust this value to move both eyes and smile */
+      top: 30%;
+      /* Adjust this value to move both eyes and smile */
       left: 50%;
       transform: translateX(-50%);
     }
@@ -69,7 +102,8 @@
 
     .smile {
       position: absolute;
-      top: 300%; /* Position relative to the eye container */
+      top: 300%;
+      /* Position relative to the eye container */
       left: 50%;
       width: 600px;
       height: 600px;
@@ -84,6 +118,7 @@
 </head>
 
 <body>
+  <div class="scrolling-message">Happy Halloween</div>
   <div class="face-container">
     <div class="eye-container">
       <div class="eye">
@@ -96,6 +131,49 @@
     <div class="smile"></div>
   </div>
   <script>
+    const scrollingMessage = document.querySelector('.scrolling-message');
+
+    function updateMessage() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const showText = urlParams.get('showText');
+      const modTextContent = urlParams.get('modTextContent');
+      const modFontSize = urlParams.get('modFontSize');
+
+      if (showText === 'false') {
+        scrollingMessage.style.display = 'none';
+      } else if (modTextContent) {
+        scrollingMessage.textContent = modTextContent || 'Happy Halloween';
+      }
+
+      if (modFontSize) {
+        scrollingMessage.style['font-size'] = parseInt(modFontSize) + 'px'; // Set custom font size
+      }
+    }
+
+    function setScrollingAnimation() {
+      const textWidth = scrollingMessage.offsetWidth;
+      const scrollDistance = (textWidth / window.innerWidth) * 100; // Convert to vw
+
+      // Set the animation duration based on scroll distance
+      const animationDuration = (scrollDistance + 100) / 5; // Adjust this factor for speed (e.g., divide by 10 for slower)
+      scrollingMessage.style.animationDuration = `${animationDuration}s`;
+
+      const keyframes = `
+          @keyframes scroll {
+              0% {
+                  transform: translateX(-${scrollDistance + 100}vw);
+              }
+              100% {
+                  transform: translateX(0); /* Move to the left edge */
+              }
+          }
+      `;
+
+      // Insert keyframes into the stylesheet
+      const styleSheet = document.styleSheets[0];
+      styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+    }
+
     const eyes = document.querySelectorAll('.eye');
 
     function movePupils() {
@@ -111,7 +189,14 @@
       setTimeout(movePupils, randomDelay);
     }
 
-    movePupils();
+    // Call the function to set the animation when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', () => {
+      updateMessage();
+      setScrollingAnimation();
+      movePupils();
+    });
+
+
   </script>
 </body>
 
