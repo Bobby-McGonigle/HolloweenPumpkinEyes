@@ -1,236 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#a94b15">
   <title>Halloween Pumpkin with Moving Eyes</title>
   <style>
-    body {
-      background: radial-gradient(circle, #ff8c00 30%, #ff4500 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      position: relative;
-      overflow: hidden;
-      background-size: 100% 100%;
-    }
-
-    /* Pumpkin surface lines */
-    body {
-      background-image:
-        repeating-linear-gradient(to right,
-          transparent,
-          transparent 20%,
-          rgba(255, 140, 0, 0.303) 25%,
-          rgba(0, 0, 0, 0.474) 50%,
-          rgba(255, 140, 0, 0) 75%),
-        radial-gradient(circle, #ff8c00 30%, #ff4500 100%);
-      background-size: 100px 100%, 100% 100%;
-      pointer-events: none;
-      /* Allow clicks to pass through */
-    }
-
-    .scrolling-message {
-      position: fixed;
-      /* Change to fixed to remove it from the document flow */
-      top: 20px;
-      /* Distance from the top */
-      white-space: nowrap;
-      /* Prevent text from wrapping */
-      font-size: 75px;
-      text-shadow: 2px 2px rgba(0, 0, 0, 0.5), 0 1px rgba(0, 0, 0, 0.5), 1px 0 rgba(0, 0, 0, 0.5), 0 -1px rgba(0, 0, 0, 0.5);
-      /* Font size for the message */
-      color: white;
-      /* Text color */
-      font-family: 'Arial', sans-serif;
-      /* Font family */
-      left: 100%;
-      /* Start completely off-screen to the right */
-      z-index: 1000;
-      /* Ensure it appears above all other elements */
-      animation: scroll 20s linear infinite;
-    }
-
-    @keyframes scroll {
-      0% {
-        transform: translateX(-120vw);
-        /* Start at the right edge */
-      }
-
-      100% {
-        transform: translateX(0);
-        /* Move to the left edge */
-      }
-    }
-
-    .face-container {
-      position: absolute;
-      top: 30%;
-      /* Adjust this value to move both eyes and smile */
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    .eye-container {
-      display: flex;
-      gap: 40px;
-    }
-
-    .eye {
-      width: 300px;
-      height: 150px;
-      background-color: rgb(0, 0, 0);
-      border-radius: 150px;
-      position: relative;
-      border: 2px solid black;
-    }
-
-    .pupil {
-      width: 60px;
-      height: 60px;
-      background-color: rgb(255, 0, 0);
-      border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      transition: transform 0.1s;
-    }
-
-    .smile {
-      position: absolute;
-      top: 300%;
-      /* Position relative to the eye container */
-      left: 50%;
-      width: 600px;
-      height: 600px;
-      background-color: rgb(0, 0, 0);
-      border: 10px solid white;
-      border-top: none;
-      border-radius: 100px 100px 0 0;
-      transform: translate(-50%, -50%) rotate(180deg);
-      clip-path: polygon(50% 83.52%, 58.98% 92.42%, 63.33% 80.56%, 90% 85%, 78.57% 75%, 87.92% 55%, 63.33% 70%, 50% 50%, 39% 70%, 5% 55%, 17.25% 75%, 10% 85%, 30.56% 80.56%, 38.97% 91.58%);
-    }
-
-    .candle-glow {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 80vw;
-      height: 80vh;
-      background: radial-gradient(circle, rgba(255, 200, 100, 0.4) 0%, rgba(255, 140, 0, 0.2) 30%, transparent 60%);
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-      z-index: 500;
-      animation: flicker 3s ease-in-out infinite;
-    }
-
-    @keyframes flicker {
-      0%, 100% {
-        opacity: 0.8;
-        transform: translate(-50%, -50%) scale(1);
-      }
-      25% {
-        opacity: 0.6;
-        transform: translate(-50%, -50%) scale(0.95);
-      }
-      50% {
-        opacity: 0.9;
-        transform: translate(-50%, -50%) scale(1.02);
-      }
-      75% {
-        opacity: 0.7;
-        transform: translate(-50%, -50%) scale(0.98);
-      }
-    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    body { overflow: hidden; background: #0c0e0c; color: #f3dec0; }
+    .scene { position: relative; width: 100%; height: 100%; isolation: isolate; background: #a94b15; }
+    .pumpkin-surface { position: absolute; width: 100%; height: 100%; inset: 0; }
+    .pumpkin-face { position: absolute; width: 96%; height: 88%; left: 2%; top: 10%; overflow: visible; }
+    .scrolling-message { position: absolute; z-index: 2; top: 5%; left: 50%; width: 94%; max-width: 1100px; margin: 0; transform: translateX(-50%); text-align: center; overflow-wrap: anywhere; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(28px, 5vw, 66px); font-weight: normal; letter-spacing: .13em; color: #e9d8b9; text-shadow: 0 2px 12px #000, 0 0 30px #d5843833; animation: greeting-fade 14s ease-in-out infinite; }
+    .scrolling-message[data-text-style="marquee"] { left: 100%; width: max-content; max-width: none; white-space: nowrap; overflow-wrap: normal; text-align: left; animation: scroll 28s linear infinite; }
+    @keyframes greeting-fade { 0%, 100% { opacity: .35; } 30%, 70% { opacity: 1; } }
+    @keyframes scroll { from { transform: translateX(calc(-100vw - 100%)); } to { transform: translateX(0); } }
+    .firelight { mix-blend-mode: screen; opacity: .85; transition: opacity 700ms ease-in-out; }
+    .ember { opacity: var(--eye-visibility, 1); filter: url(#pupil-glow); transition: transform 240ms ease-out; }
+    .eyebrow { transform-box: view-box; transition: transform 900ms cubic-bezier(.4, 0, .2, 1); }
+    .pumpkin-surface, .eyebrow, .eyelid, .ambient-detail { filter: brightness(var(--outside-light, 1)); }
+    .cut-wall { filter: brightness(var(--shell-light, 1)); }
+    .teal-reflection { opacity: var(--eye-visibility, 1); mix-blend-mode: screen; }
+    .eyelid { transition: transform 600ms ease-in-out; transform: translateY(-100px); }
+    .eyebrow-left { transform-origin: 420px 410px; }
+    .eyebrow-right { transform-origin: 780px 410px; }
+    @media (prefers-reduced-motion: reduce) { .firelight, .scrolling-message { animation: none; } .scrolling-message, .scrolling-message[data-text-style="marquee"] { animation: none; opacity: 1; left: 50%; width: 94%; transform: translateX(-50%); max-width: 1100px; white-space: normal; overflow-wrap: anywhere; text-align: center; letter-spacing: .05em; } .ember, .firelight, .eyebrow, .eyelid { transition: none; } }
   </style>
 </head>
-
 <body>
-  <div class="candle-glow"></div>
-  <div class="scrolling-message">Happy Halloween</div>
-  <div class="face-container">
-    <div class="eye-container">
-      <div class="eye">
-        <div class="pupil"></div>
-      </div>
-      <div class="eye">
-        <div class="pupil"></div>
-      </div>
-    </div>
-    <div class="smile"></div>
-  </div>
+  <main class="scene" aria-label="A glowing jack-o'-lantern with moving ghostly teal eyes">
+    <h1 class="scrolling-message">Happy Halloween</h1>
+    <svg class="pumpkin-surface" viewBox="250 310 700 420" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="stem" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#634225"/><stop offset=".25" stop-color="#503219"/><stop offset=".55" stop-color="#382311"/><stop offset="1" stop-color="#1c1008"/></linearGradient>
+        <path id="brow-shape" d="M337 401 L348 387 Q407 382 466 418 L514 454 L509 472 L484 460 Q419 417 346 420 L339 413Z"/>
+        <clipPath id="brow-clip"><use href="#brow-shape"/></clipPath>
+        <g id="woody-brow">
+          <use href="#brow-shape" transform="translate(0 5)" fill="#271407" opacity=".7"/>
+          <use href="#brow-shape" fill="url(#stem)" stroke="#25160b" stroke-width="1.5" stroke-linejoin="round"/>
+          <g fill="none" stroke-linecap="round">
+            <path d="M349 394 Q407 391 465 427 L503 455 M352 406 Q414 404 477 444" stroke="#9a7043" stroke-opacity=".16" stroke-width="1.5"/>
+            <path d="M346 412 Q411 408 480 451 L505 465 M365 398 Q408 397 443 419 M458 433 L471 438" stroke="#1d1008" stroke-opacity=".35" stroke-width="1.5"/>
+            <path d="M376 391 L371 400 L379 406 M448 417 L444 423 L453 432 M490 446 L487 452" stroke="#29170b" stroke-opacity=".3" stroke-width="1"/>
+          </g>
+          <g clip-path="url(#brow-clip)"><rect x="330" y="380" width="190" height="100" fill="#4d2d15" opacity=".16" filter="url(#texture)"/></g>
+        </g>
+        <radialGradient id="skin" cx="39%" cy="28%" r="76%"><stop stop-color="#dc7b2a"/><stop offset=".35" stop-color="#b65014"/><stop offset=".7" stop-color="#76300e"/><stop offset="1" stop-color="#271508"/></radialGradient>
+        <linearGradient id="rib"><stop stop-color="#241006" stop-opacity=".85"/><stop offset=".17" stop-color="#73300c" stop-opacity=".3"/><stop offset=".43" stop-color="#ffac51" stop-opacity=".23"/><stop offset=".69" stop-color="#ce681e" stop-opacity=".04"/><stop offset="1" stop-color="#240f05" stop-opacity=".8"/></linearGradient>
+        <radialGradient id="cavity" gradientUnits="userSpaceOnUse" cx="600" cy="780" r="430"><stop offset="0" stop-color="#d8a354"/><stop offset=".2" stop-color="#b57628"/><stop offset=".48" stop-color="#70320c"/><stop offset=".75" stop-color="#301004"/><stop offset="1" stop-color="#080302"/></radialGradient>
+        <linearGradient id="cut" x2=".2" y2="1"><stop stop-color="#401607"/><stop offset=".4" stop-color="#a9470e"/><stop offset=".75" stop-color="#f4a139"/><stop offset="1" stop-color="#ffcf63"/></linearGradient>
+        <radialGradient id="ember" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#020101"/><stop offset=".8" stop-color="#020101"/><stop offset=".87" stop-color="#106b68"/><stop offset=".94" stop-color="#45c6ba"/><stop offset="1" stop-color="#a0f2df"/></radialGradient>
+        <filter id="texture" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".34" numOctaves="3" seed="8" result="noise"/><feColorMatrix in="noise" type="saturate" values="0"/><feBlend in="SourceGraphic" mode="soft-light"/></filter>
+        <path id="left-eye" d="M349 428 Q397 421 490 479 L502 511 Q415 523 351 485Z"/>
+        <path id="right-eye" d="M850 419 Q788 430 709 479 L697 511 Q786 523 848 477Z"/>
+        <path id="nose" d="M600 487 L568 556 Q599 545 631 555Z"/>
+        <path id="mouth" d="M327 559 L391 587 L399 614 L443 625 L449 601 L509 621 L516 652 L562 657 L566 630 L623 631 L628 659 L675 650 L680 619 L733 600 L741 623 L782 605 L786 577 L867 544 Q839 665 766 703 L731 685 L711 724 L659 739 L644 715 L596 721 L582 745 L529 738 L518 711 L475 701 L456 719 Q358 677 327 559Z"/>
+        <clipPath id="left-clip"><use href="#left-eye"/></clipPath>
+        <clipPath id="right-clip"><use href="#right-eye"/></clipPath>
+        <clipPath id="nose-clip"><use href="#nose"/></clipPath>
+        <clipPath id="mouth-clip"><use href="#mouth"/></clipPath>
+
+
+
+
+        <linearGradient id="shell-wall" x1="0" y1="0" x2=".25" y2="1"><stop stop-color="#351306"/><stop offset=".3" stop-color="#783009"/><stop offset=".65" stop-color="#cb741e"/><stop offset=".88" stop-color="#f1b54c"/><stop offset="1" stop-color="#bd701d"/></linearGradient>
+        <filter id="recess-shadow" x="-10%" y="-15%" width="120%" height="130%"><feGaussianBlur in="SourceAlpha" stdDeviation="3" result="soft"/><feOffset in="soft" dx="1" dy="6" result="shifted"/><feComposite in="SourceAlpha" in2="shifted" operator="out" result="edge"/><feFlood flood-color="#160702" flood-opacity=".9"/><feComposite in2="edge" operator="in"/><feComposite in2="SourceGraphic" operator="over"/></filter>
+        <mask id="recess-left" maskUnits="userSpaceOnUse" x="290" y="350" width="620" height="420"><use href="#left-eye" fill="white" transform="translate(36 30) scale(.94)"/></mask>
+        <mask id="recess-right" maskUnits="userSpaceOnUse" x="290" y="350" width="620" height="420"><use href="#right-eye" fill="white" transform="translate(36 30) scale(.94)"/></mask>
+        <mask id="recess-nose" maskUnits="userSpaceOnUse" x="290" y="350" width="620" height="420"><use href="#nose" fill="white" transform="translate(36 30) scale(.94)"/></mask>
+        <mask id="recess-mouth" maskUnits="userSpaceOnUse" x="290" y="350" width="620" height="420"><use href="#mouth" fill="white" transform="translate(36 30) scale(.94)"/><polygon points="327,559 391,587 403.54,581.78 343.38,555.46" fill="black"/><polygon points="391,587 399,614 411.06,607.16 403.54,581.78" fill="black"/><polygon points="399,614 443,625 452.42,617.5 411.06,607.16" fill="black"/><polygon points="443,625 449,601 458.06,594.94 452.42,617.5" fill="black"/><polygon points="449,601 509,621 514.46,613.74 458.06,594.94" fill="black"/><polygon points="509,621 516,652 521.04,642.88 514.46,613.74" fill="black"/><polygon points="516,652 562,657 564.28,647.58 521.04,642.88" fill="black"/><polygon points="562,657 566,630 568.04,622.2 564.28,647.58" fill="black"/><polygon points="566,630 623,631 621.62,623.14 568.04,622.2" fill="black"/><polygon points="623,631 628,659 626.32,649.46 621.62,623.14" fill="black"/><polygon points="628,659 675,650 670.5,641 626.32,649.46" fill="black"/><polygon points="675,650 680,619 675.2,611.86 670.5,641" fill="black"/><polygon points="680,619 733,600 725.02,594 675.2,611.86" fill="black"/><polygon points="733,600 741,623 732.54,615.62 725.02,594" fill="black"/><polygon points="741,623 782,605 771.08,598.7 732.54,615.62" fill="black"/><polygon points="782,605 786,577 774.84,572.38 771.08,598.7" fill="black"/><polygon points="786,577 867,544 850.98,541.36 774.84,572.38" fill="black"/></mask>
+
+        <path id="great-crack" d="M805 350 L799.5 369 L792 385 L795.5 399 L786 419 L786 437 L779.5 456 L783 475 L776 493 L774.5 514 L766 536 L767.5 552 L755.5 575 L753 590 L738 642 L772 642 L781 590 L780.5 575 L788.5 552 L784 536 L789.5 514 L790 493 L795 475 L790.5 456 L796 437 L794 419 L802.5 399 L798 385 L802.5 369 L805 350Z"/>
+        <clipPath id="great-crack-clip"><use href="#great-crack"/></clipPath>
+        <mask id="crack-solid" maskUnits="userSpaceOnUse" x="290" y="330" width="620" height="460"><rect x="290" y="330" width="620" height="460" fill="white"/><use href="#right-eye" fill="black"/><use href="#mouth" fill="black"/></mask>
+        <mask id="crack-recess" maskUnits="userSpaceOnUse" x="290" y="330" width="620" height="460"><use href="#great-crack" fill="white" transform="translate(-5 -7)"/></mask>
+        <mask id="broken-brow" maskUnits="userSpaceOnUse" x="290" y="330" width="620" height="460"><rect x="290" y="330" width="620" height="460" fill="white"/><use href="#great-crack" fill="black"/></mask>
+
+        <clipPath id="joined-opening"><use href="#right-eye"/><use href="#mouth"/><use href="#great-crack"/></clipPath>
+        <mask id="joined-recess" maskUnits="userSpaceOnUse" x="290" y="330" width="620" height="460">
+          <g clip-path="url(#right-clip)" mask="url(#recess-right)"><use href="#right-eye" fill="white"/></g>
+          <g clip-path="url(#mouth-clip)" mask="url(#recess-mouth)"><use href="#mouth" fill="white"/></g>
+          <g mask="url(#crack-recess)"><use href="#great-crack" fill="white"/></g>
+        </mask>
+
+        <filter id="pupil-glow" x="-70%" y="-70%" width="240%" height="240%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.2" result="spread"/><feGaussianBlur in="spread" stdDeviation="4" result="halo"/><feFlood flood-color="#65dfd0" flood-opacity=".48"/><feComposite in2="halo" operator="in" result="teal-glow"/><feMerge><feMergeNode in="teal-glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <radialGradient id="spill-left" gradientUnits="userSpaceOnUse" cx="420" cy="477" r="67"><stop stop-color="#67e8d3" stop-opacity=".3"/><stop offset=".45" stop-color="#41c4b3" stop-opacity=".16"/><stop offset="1" stop-color="#41c4b3" stop-opacity="0"/></radialGradient>
+        <radialGradient id="spill-right" href="#spill-left" cx="780"/>
+        <mask id="left-wall" maskUnits="userSpaceOnUse" x="330" y="400" width="200" height="140"><use href="#left-eye" fill="white"/><g mask="url(#recess-left)"><use href="#left-eye" fill="black"/></g></mask>
+        <mask id="right-wall" maskUnits="userSpaceOnUse" x="680" y="400" width="200" height="140"><use href="#right-eye" fill="white"/><g mask="url(#recess-right)"><use href="#right-eye" fill="black"/></g><use href="#great-crack" fill="black"/></mask>
+        <path id="upper-lid" d="M335 330 H520 V472 Q420 445 335 418Z"/>
+        <clipPath id="upper-lid-clip"><use href="#upper-lid"/></clipPath>
+        <mask id="lid-intact" maskUnits="userSpaceOnUse" x="290" y="330" width="620" height="460"><rect x="290" y="330" width="620" height="460" fill="white"/><use href="#great-crack" fill="black"/></mask>
+      </defs>
+      <rect x="250" y="310" width="700" height="420" fill="url(#skin)"/>
+      <g fill="url(#rib)">
+          <path d="M411 276 C303 402 306 652 402 776 L295 787 L212 651 L211 371Z"/>
+          <path d="M484 260 C388 376 370 641 478 782 L401 783 C322 603 345 385 411 276Z"/>
+          <path d="M557 259 C484 380 472 650 552 787 L479 785 C413 609 423 376 484 260Z"/>
+          <path d="M600 270 C573 411 567 638 605 796 L551 788 C508 617 518 386 557 259Z"/>
+          <path d="M651 261 C701 407 703 647 655 791 L605 796 C641 627 638 396 600 270Z"/>
+          <path d="M713 261 C803 404 800 652 735 783 L655 791 C729 603 720 376 651 261Z"/>
+          <path d="M766 277 C873 393 881 624 821 766 L735 783 C836 603 817 376 713 261Z"/>
+          <path d="M833 276 C950 417 949 649 862 765 L821 766 C909 560 866 358 766 277Z"/>
+        </g>
+      <rect x="250" y="310" width="700" height="420" fill="#9d632c" opacity=".17" filter="url(#texture)"/>
+    </svg>
+    <svg class="pumpkin-face" viewBox="290 350 620 420" role="img" aria-labelledby="pumpkin-title" preserveAspectRatio="xMidYMid meet">
+      <title id="pumpkin-title">A full-screen textured pumpkin face with deep carved openings and bright moving ghostly teal eyes</title>
+      <!-- Back apertures recede toward a shared vanishing point; one hidden light below the bottom teeth illuminates all openings. -->
+      <g>
+        <use class="cut-wall" href="#left-eye" fill="url(#shell-wall)" stroke="#4a2009" stroke-width="3" stroke-linejoin="round"/>
+        <g clip-path="url(#left-clip)"><use href="#left-eye" class="ambient-detail" fill="#975d24" opacity=".08" filter="url(#texture)"/></g>
+        <g clip-path="url(#left-clip)"><g mask="url(#recess-left)">
+          <g filter="url(#recess-shadow)">
+            <use href="#left-eye" fill="#080402"/>
+            <use href="#left-eye" class="firelight" fill="url(#cavity)"/>
+          </g>
+          <ellipse class="ember" cx="420" cy="477" rx="22" ry="22" fill="url(#ember)"/>
+        </g>
+        </g>
+      </g>
+
+      <g>
+        <use class="cut-wall" href="#nose" fill="url(#shell-wall)" stroke="#4a2009" stroke-width="3" stroke-linejoin="round"/>
+        <g clip-path="url(#nose-clip)"><use href="#nose" fill="#975d24" opacity=".08" filter="url(#texture)"/></g>
+        <g clip-path="url(#nose-clip)"><g mask="url(#recess-nose)">
+          <g filter="url(#recess-shadow)">
+            <use href="#nose" fill="#080402"/>
+
+            <use href="#nose" class="firelight" fill="url(#cavity)"/>
+          </g>
+
+        </g>
+        </g>
+      </g>
+
+      <g class="eyebrow eyebrow-left"><use href="#woody-brow"/></g>
+      <g mask="url(#broken-brow)"><g class="eyebrow eyebrow-right"><g transform="translate(1200 0) scale(-1 1)"><use href="#woody-brow"/></g></g></g>
+      <!-- A union of the eye, fracture, and mouth forms one uninterrupted opening. -->
+      <g clip-path="url(#joined-opening)">
+        <g class="cut-wall" fill="url(#shell-wall)"><use href="#right-eye"/><use href="#mouth"/><use href="#great-crack"/></g>
+        <g filter="url(#recess-shadow)"><g mask="url(#joined-recess)">
+          <rect x="290" y="330" width="620" height="460" fill="#080402"/>
+          <rect x="290" y="330" width="620" height="460" class="firelight" fill="url(#cavity)"/>
+        </g></g>
+        <g mask="url(#joined-recess)"><ellipse class="ember" cx="780" cy="477" rx="22" ry="22" fill="url(#ember)"/></g>
+      </g>
+      <g class="teal-reflection" mask="url(#left-wall)"><rect x="330" y="400" width="200" height="140" fill="url(#spill-left)"/></g>
+      <g class="teal-reflection" mask="url(#right-wall)"><rect x="680" y="400" width="200" height="140" fill="url(#spill-right)"/></g>
+      <g clip-path="url(#left-clip)"><g class="eyelid"><use href="#upper-lid" fill="url(#skin)" stroke="#67300f" stroke-width="2"/><g clip-path="url(#upper-lid-clip)"><use href="#upper-lid" fill="#9d632c" opacity=".17" filter="url(#texture)"/></g></g></g>
+      <g mask="url(#lid-intact)"><g clip-path="url(#right-clip)"><g transform="translate(1200 0) scale(-1 1)"><g class="eyelid"><use href="#upper-lid" fill="url(#skin)" stroke="#67300f" stroke-width="2"/><g clip-path="url(#upper-lid-clip)"><use href="#upper-lid" fill="#9d632c" opacity=".17" filter="url(#texture)"/></g></g></g></g></g>
+    </svg>
+  </main>
   <script>
-    const scrollingMessage = document.querySelector('.scrolling-message');
+    const message = document.querySelector('.scrolling-message');
+    const defaultMessage = message.textContent;
+    function updateScrollDuration() {
+      message.style.animationDuration = message.dataset.textStyle === 'marquee'
+        ? `${(window.innerWidth + message.offsetWidth) / 55}s`
+        : '14s';
+    }
+    function applyHashParameters() {
+      const params = new URLSearchParams(window.location.hash.slice(1));
+      message.dataset.textStyle = params.get('textStyle') === 'marquee' ? 'marquee' : 'fade';
+      message.hidden = params.get('showText') === 'false';
+      message.textContent = params.get('modTextContent') || defaultMessage;
+      const fontSize = Number.parseInt(params.get('modFontSize'), 10);
+      message.style.fontSize = Number.isFinite(fontSize) && fontSize > 0
+        ? `${Math.min(fontSize, 300)}px`
+        : '';
+      updateScrollDuration();
+    }
+    applyHashParameters();
+    window.addEventListener('hashchange', applyHashParameters);
+    window.addEventListener('resize', updateScrollDuration);
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const embers = document.querySelectorAll('.ember');
+    const brows = document.querySelectorAll('.eyebrow');
+    const lids = document.querySelectorAll('.eyelid');
+    const lights = document.querySelectorAll('.firelight');
+    const scene = document.querySelector('.scene');
+    const source = document.querySelector('#cavity');
+    const spills = [document.querySelector('#spill-left'), document.querySelector('#spill-right')];
+    const random = (min, max) => min + Math.random() * (max - min);
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    const smooth = value => value * value * (3 - 2 * value);
+    const pointer = { x: 0, y: 0, until: 0 };
+    const gaze = { x: 0, y: 0, targetX: 0, targetY: 0, next: 0, trackingUntil: 0 };
+    const flame = { from: .85, to: .85, start: 0, duration: 900, next: 0 };
+    let nextBrow = 1200;
+    let nextSquint = random(7000, 14000);
+    let squintUntil = 0;
+    let nextBlackout = random(45000, 90000);
+    let blackoutStart = 0;
+    let blackoutHold = 0;
+    let blackoutKind = 'inside';
+    let nextBlackoutKind = Math.random() < .5 ? 'inside' : 'outside';
+    let frameId = 0;
+    let lastFrame = 0;
+    let elapsed = 0;
+    let motionElapsed = 0;
+    let brightness = .85;
+    let motionPaused = false;
+    let pausedTransforms = [];
 
-    function updateMessage() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const showText = urlParams.get('showText');
-      const modTextContent = urlParams.get('modTextContent');
-      const modFontSize = urlParams.get('modFontSize');
-
-      if (showText === 'false') {
-        scrollingMessage.style.display = 'none';
-      } else if (modTextContent) {
-        scrollingMessage.textContent = modTextContent || 'Happy Halloween';
-      }
-
-      if (modFontSize) {
-        scrollingMessage.style['font-size'] = parseInt(modFontSize) + 'px'; // Set custom font size
+    function pauseMotion(paused) {
+      if (paused === motionPaused) return;
+      motionPaused = paused;
+      message.style.animationPlayState = paused ? 'paused' : 'running';
+      const movingParts = [...brows, ...lids];
+      if (paused) {
+        pausedTransforms = movingParts.map(part => part.style.transform);
+        movingParts.forEach(part => {
+          const transform = window.getComputedStyle(part).transform;
+          part.style.transition = 'none';
+          part.style.transform = transform;
+        });
+      } else {
+        movingParts.forEach((part, index) => {
+          part.style.transition = '';
+          part.style.transform = pausedTransforms[index];
+        });
       }
     }
 
-    function setScrollingAnimation() {
-      const textWidth = scrollingMessage.offsetWidth;
-      const scrollDistance = (textWidth / window.innerWidth) * 100; // Convert to vw
+    window.addEventListener('pointermove', event => {
+      if (event.pointerType === 'touch') return;
+      pointer.x = clamp((event.clientX / window.innerWidth - .5) * 36, -18, 18);
+      pointer.y = clamp((event.clientY / window.innerHeight - .5) * 10, -5, 5);
+      if (motionPaused || reducedMotion.matches) return;
+      pointer.until = motionElapsed + 5000;
+    }, { passive: true });
+    document.addEventListener('pointerleave', () => pointer.until = 0);
 
-      // Set the animation duration based on scroll distance
-      const animationDuration = (scrollDistance + 100) / 5; // Adjust this factor for speed (e.g., divide by 10 for slower)
-      scrollingMessage.style.animationDuration = `${animationDuration}s`;
-
-      const keyframes = `
-          @keyframes scroll {
-              0% {
-                  transform: translateX(-${scrollDistance + 100}vw);
-              }
-              100% {
-                  transform: translateX(0); /* Move to the left edge */
-              }
-          }
-      `;
-
-      // Insert keyframes into the stylesheet
-      const styleSheet = document.styleSheets[0];
-      styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
+    function setBrows(squint = false) {
+      const furrow = squint ? 9 : random(2, 7);
+      const raised = !squint && Math.random() < .3;
+      brows.forEach((brow, index) => {
+        brow.style.transform = `translateY(${squint ? 5 : raised && index === 0 ? -6 : 1}px) rotate(${index === 0 ? raised ? -4 : furrow : -furrow}deg)`;
+      });
     }
 
-    const eyes = document.querySelectorAll('.eye');
+    function resetAnimation() {
+      pauseMotion(false);
+      embers.forEach(eye => eye.style.transform = 'translate(0, 0)');
+      brows.forEach(brow => brow.style.transform = 'none');
+      lids.forEach(lid => lid.style.transform = 'translateY(-100px)');
+      lights.forEach(light => light.style.opacity = .85);
+      scene.style.setProperty('--shell-light', '1');
+      scene.style.setProperty('--eye-visibility', '1');
+      scene.style.setProperty('--outside-light', '1');
+      source.setAttribute('cx', '600');
+      source.setAttribute('cy', '780');
+      spills.forEach((spill, i) => {
+        spill.setAttribute('cx', i === 0 ? '420' : '780');
+        spill.setAttribute('cy', '477');
+      });
+      gaze.x = gaze.y = gaze.targetX = gaze.targetY = 0;
+      pointer.until = 0;
+      gaze.trackingUntil = 0;
+      squintUntil = blackoutStart = 0;
+      nextBlackoutKind = Math.random() < .5 ? 'inside' : 'outside';
+      nextSquint = motionElapsed + random(7000, 14000);
+      nextBlackout = elapsed + random(45000, 90000);
+    }
 
-    function movePupils() {
-      const randomX = Math.random() * 50 - 25; // Increased range for x direction
-      const randomY = Math.random() * 20 - 10; // Increased range for y direction
-      eyes.forEach(eye => {
-        const pupil = eye.querySelector('.pupil');
-        pupil.style.transform = `translate(-50%, -50%) translate(${randomX}px, ${randomY}px)`;
+    function animate(now) {
+      if (reducedMotion.matches || document.hidden) { frameId = 0; return; }
+      frameId = window.requestAnimationFrame(animate);
+      if (lastFrame && now - lastFrame < 32) return;
+      const dt = lastFrame ? Math.min(now - lastFrame, 100) : 33;
+      lastFrame = now;
+      elapsed += dt;
+      if (!blackoutStart && elapsed >= nextBlackout) {
+        blackoutStart = elapsed;
+        blackoutKind = nextBlackoutKind;
+        blackoutHold = random(4000, 7000);
+      }
+      let warmth = 1;
+      let eyeVisibility = 1;
+      let outsideLight = 1;
+      if (blackoutStart) {
+        const age = elapsed - blackoutStart;
+        let visibility;
+        if (age < 1600) visibility = 1 - smooth(age / 1600);
+        else if (age < 1600 + blackoutHold) visibility = 0;
+        else visibility = smooth(clamp((age - 1600 - blackoutHold) / 2800, 0, 1));
+        // Only one illumination channel can black out at a time.
+        if (blackoutKind === 'inside') {
+          warmth = eyeVisibility = visibility;
+        } else {
+          outsideLight = visibility;
+        }
+        if (age >= 4400 + blackoutHold) {
+          blackoutStart = 0;
+          nextBlackoutKind = blackoutKind === 'inside' ? 'outside' : 'inside';
+          nextBlackout = elapsed + random(45000, 90000);
+        }
+      }
+      // Keep the blackout fade running while all other animation clocks are frozen.
+      const frozen = Boolean(blackoutStart && blackoutKind === 'inside');
+      pauseMotion(frozen);
+      if (!frozen) motionElapsed += dt;
+      const t = motionElapsed;
+      if (!frozen) {
+
+      if (t >= gaze.next) {
+        const stare = Math.random() < .3;
+        gaze.trackingUntil = pointer.until > t && Math.random() < .55 ? t + random(1600, 3200) : 0;
+        gaze.targetX = random(-17, 17);
+        gaze.targetY = random(-4, 4);
+        gaze.next = t + (stare ? random(2600, 4800) : random(650, 1500));
+      }
+      const tracking = t < gaze.trackingUntil && t < pointer.until;
+      const blend = 1 - Math.exp(-dt / (tracking ? 150 : 85));
+      gaze.x += ((tracking ? pointer.x : gaze.targetX) - gaze.x) * blend;
+      gaze.y += ((tracking ? pointer.y : gaze.targetY) - gaze.y) * blend;
+      embers.forEach(eye => {
+        eye.style.transition = 'none';
+        eye.style.transform = `translate(${gaze.x}px, ${gaze.y}px)`;
+      });
+      spills.forEach((spill, i) => {
+        spill.setAttribute('cx', (i === 0 ? 420 : 780) + gaze.x);
+        spill.setAttribute('cy', 477 + gaze.y);
       });
 
-      // Set a random timeout for the next movement
-      const randomDelay = Math.random() * (2000 - 750) + 750; // Random delay between 750ms and 2000ms
-      setTimeout(movePupils, randomDelay);
+      if (t >= nextSquint && !squintUntil) {
+        squintUntil = t + random(1600, 2600);
+        lids.forEach(lid => lid.style.transform = 'translateY(13px)');
+        setBrows(true);
+      }
+      if (squintUntil && t >= squintUntil) {
+        squintUntil = 0;
+        lids.forEach(lid => lid.style.transform = 'translateY(-100px)');
+        setBrows();
+        nextSquint = t + random(10000, 22000);
+        nextBrow = t + 2500;
+      }
+      if (!squintUntil && t >= nextBrow) {
+        setBrows();
+        nextBrow = t + random(2600, 5800);
+      }
+
+      const progress = clamp((t - flame.start) / flame.duration, 0, 1);
+      brightness = flame.from + (flame.to - flame.from) * smooth(progress);
+      if (t >= flame.next) {
+        flame.from = brightness;
+        flame.to = Math.random() < .18 ? random(.48, .66) : random(.72, 1);
+        flame.start = t;
+        flame.duration = Math.random() < .12 ? random(160, 340) : random(500, 1400);
+        flame.next = t + flame.duration + random(200, 1700);
+      }
+      }
+      lights.forEach(light => {
+        light.style.transition = 'none';
+        light.style.opacity = brightness * warmth;
+      });
+      scene.style.setProperty('--shell-light', .2 * outsideLight + .8 * warmth);
+      scene.style.setProperty('--outside-light', outsideLight);
+      scene.style.setProperty('--eye-visibility', eyeVisibility);
+      // Both axes drift subtly, but the hidden source stays below the teeth.
+      if (!frozen) {
+        source.setAttribute('cx', 600 + Math.sin(t / 3700) * 10 + Math.sin(t / 7100) * 5);
+        source.setAttribute('cy', 780 + Math.sin(t / 4900) * 5);
+      }
     }
 
-    // Call the function to set the animation when the DOM is fully loaded
-    document.addEventListener('DOMContentLoaded', () => {
-      updateMessage();
-      setScrollingAnimation();
-      movePupils();
-    });
-
-
+    function syncAnimation() {
+      window.cancelAnimationFrame(frameId);
+      lastFrame = 0;
+      if (reducedMotion.matches) resetAnimation();
+      if (!reducedMotion.matches && !document.hidden) frameId = window.requestAnimationFrame(animate);
+    }
+    reducedMotion.addEventListener('change', syncAnimation);
+    document.addEventListener('visibilitychange', syncAnimation);
+    resetAnimation();
+    syncAnimation();
   </script>
 </body>
-
 </html>
