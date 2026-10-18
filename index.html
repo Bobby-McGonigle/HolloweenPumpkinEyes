@@ -17,7 +17,7 @@
     @keyframes greeting-fade { 0%, 100% { opacity: .35; } 30%, 70% { opacity: 1; } }
     @keyframes scroll { from { transform: translateX(calc(-100vw - 100%)); } to { transform: translateX(0); } }
     .firelight { mix-blend-mode: screen; opacity: .85; transition: opacity 700ms ease-in-out; }
-    .ember { opacity: var(--eye-visibility, 1); filter: url(#pupil-glow); transition: transform 240ms ease-out; }
+    .ember { opacity: var(--eye-visibility, 1); transition: transform 240ms ease-out; }
     .eyebrow { transform-box: view-box; transition: transform 900ms cubic-bezier(.4, 0, .2, 1); }
     .pumpkin-surface, .eyebrow, .eyelid, .ambient-detail { filter: brightness(var(--outside-light, 1)); }
     .cut-wall { filter: brightness(var(--shell-light, 1)); }
@@ -84,7 +84,7 @@
           <g mask="url(#crack-recess)"><use href="#great-crack" fill="white"/></g>
         </mask>
 
-        <filter id="pupil-glow" x="-70%" y="-70%" width="240%" height="240%"><feMorphology in="SourceAlpha" operator="dilate" radius="1.2" result="spread"/><feGaussianBlur in="spread" stdDeviation="4" result="halo"/><feFlood flood-color="#65dfd0" flood-opacity=".48"/><feComposite in2="halo" operator="in" result="teal-glow"/><feMerge><feMergeNode in="teal-glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <radialGradient id="pupil-halo"><stop offset="0" stop-color="#65dfd0" stop-opacity=".35"/><stop offset=".6" stop-color="#65dfd0" stop-opacity=".35"/><stop offset=".74" stop-color="#65dfd0" stop-opacity=".16"/><stop offset=".9" stop-color="#65dfd0" stop-opacity=".035"/><stop offset="1" stop-color="#65dfd0" stop-opacity="0"/></radialGradient>
         <radialGradient id="spill-left" gradientUnits="userSpaceOnUse" cx="420" cy="477" r="67"><stop stop-color="#67e8d3" stop-opacity=".3"/><stop offset=".45" stop-color="#41c4b3" stop-opacity=".16"/><stop offset="1" stop-color="#41c4b3" stop-opacity="0"/></radialGradient>
         <radialGradient id="spill-right" href="#spill-left" cx="780"/>
         <mask id="left-wall" maskUnits="userSpaceOnUse" x="330" y="400" width="200" height="140"><use href="#left-eye" fill="white"/><g mask="url(#recess-left)"><use href="#left-eye" fill="black"/></g></mask>
@@ -117,7 +117,7 @@
             <use href="#left-eye" fill="#080402"/>
             <use href="#left-eye" class="firelight" fill="url(#cavity)"/>
           </g>
-          <ellipse class="ember" cx="420" cy="477" rx="22" ry="22" fill="url(#ember)"/>
+          <g class="ember"><circle cx="420" cy="477" r="35" fill="url(#pupil-halo)"/><circle cx="420" cy="477" r="22" fill="url(#ember)"/></g>
         </g>
         </g>
       </g>
@@ -145,7 +145,7 @@
           <rect x="290" y="330" width="620" height="460" fill="#080402"/>
           <rect x="290" y="330" width="620" height="460" class="firelight" fill="url(#cavity)"/>
         </g></g>
-        <g mask="url(#joined-recess)"><ellipse class="ember" cx="780" cy="477" rx="22" ry="22" fill="url(#ember)"/></g>
+        <g mask="url(#joined-recess)"><g class="ember"><circle cx="780" cy="477" r="35" fill="url(#pupil-halo)"/><circle cx="780" cy="477" r="22" fill="url(#ember)"/></g></g>
       </g>
       <g class="teal-reflection" mask="url(#left-wall)"><rect x="330" y="400" width="200" height="140" fill="url(#spill-left)"/></g>
       <g class="teal-reflection" mask="url(#right-wall)"><rect x="680" y="400" width="200" height="140" fill="url(#spill-right)"/></g>
